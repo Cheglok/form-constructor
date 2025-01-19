@@ -1,0 +1,196 @@
+<template>
+    <form novalidate @submit.prevent="onSubmit" class="field-builder">
+        <h2 class="fs-2">{{ props.component ? "Редактирование поля" : "Создать новое поле" }}</h2>
+        <UiSelect
+            label="Выберите тип поля"
+            name="tag"
+            :required="true"
+            :options="typeFieldSelect"
+            :model-value="newField.tag"
+            @update:model-value="changeFieldType"
+            class="mb-3"
+        />
+        <template v-if="newField.tag !== 'UiButton'">
+            <UiInput
+                name="label"
+                label="Подпись к полю"
+                required
+                :model-value="newField.label"
+                :error-message="newField.labelError"
+                @update:model-value="updateLabelInput"
+            />
+            <UiCheckbox
+                name="required"
+                label="Обязательно к заполнению"
+                v-model="newField.required"
+                class="start-position"
+            />
+            <UiSelect
+                label="Выберите источник данных"
+                name="dataSourceType"
+                :options="dataSourceSelect"
+                :model-value="dataSourceType"
+                @update:model-value="changeDataSourceType"
+            />
+            <UiInput
+                v-if="dataSourceType === DataSourceType.API"
+                name="apiEndpoint"
+                label="Ссылка для загрузки данных"
+                required
+                :error-message="newField.apiEndpointError"
+                :model-value="newField.apiEndpoint"
+                @update:model-value="updateApiEndpointInput"
+            />
+            <template v-if="dataSourceType === DataSourceType.STATIC">
+                <UiInput
+                    v-if="newField.tag === FieldTag.UI_INPUT"
+                    name="startData"
+                    label="Начальное значение в поле"
+                    :error-message="newField.currentValueError"
+                    :model-value="newField.currentValue"
+                    @update:model-value="updateCurrentValue"
+                />
+                <UiCheckbox
+                    v-if="newField.tag === FieldTag.UI_CHECKBOX"
+                    name="startCheckboxValue"
+                    label="Чекбокс выбран?"
+                    :error-message="newField.currentValueError"
+                    v-model="newField.currentValue"
+                    class="start-position"
+                />
+            </template>
+
+        </template>
+            <UiInput
+                v-if="newField.tag === FieldTag.UI_BUTTON || newField.tag === FieldTag.UI_SELECT"
+                name="text"
+                label="Надпись на кнопке"
+                required
+                :error-message="newField.buttonTextError"
+                :model-value="newField.text"
+                @update:model-value="updateButtonTextInput"
+            />
+            <UiSelect
+                v-if="newField.tag === 'UiButton'"
+                label="Выберите тип кнопки"
+                name="buttonType"
+                required
+                :options="buttonTypeOptions"
+                v-model="newField.type"
+            />
+            <UiInput
+                v-if="newField.tag === FieldTag.UI_SELECT"
+                name="options"
+                label="Опции в списке, через запятую"
+                required
+                :error-message="newField.optionsError"
+                :model-value="newField.options?.join(', ')"
+                @update:model-value="updateOptionsInput"
+            />
+        <div class="row">
+            <div class="col">
+            <UiButton type="submit" text="Сохранить"/>
+            </div>
+            <div class="col">
+            <UiButton type="reset" text="Сбросить"/>
+
+            </div>
+        </div>
+        {{newField}}
+    </form>
+</template>
+
+<script setup lang="ts">
+
+import UiCheckbox from "@/components/ui/UiCheckbox.vue";
+import UiInput from "@/components/ui/UiInput.vue";
+import UiSelect from "@/components/ui/UiSelect.vue";
+import {Ref, ref, watch} from "vue";
+import UiButton from "@/components/ui/UiButton.vue";
+import {DataSourceType, FieldTag, FormField} from "@/typespaces/types";
+import {buttonTypeOptions, dataSourceSelect, getDefaultField, typeFieldSelect} from "@/constants/constants";
+import {validateFormBuilder} from "@/helpers/helpers";
+
+const props = defineProps<{
+        component: FormField | null,
+    }>();
+
+watch(() => props.component, (newValue) => {
+    console.log(newValue);
+    newField.value = newValue || getDefaultField(FieldTag.UI_INPUT);
+})
+
+const emit = defineEmits(["saveField"])
+const newField: Ref<FormField> = ref(props.component || getDefaultField(FieldTag.UI_INPUT));
+function changeFieldType(event: FieldTag) {
+    const newDefault = getDefaultField(event);
+    if (newField.value.name) {
+        newDefault.name = newField.value.name;
+    }
+    newField.value = newDefault;
+}
+function updateLabelInput(event: string) {
+    newField.value.label = event;
+    delete newField.value.labelError;
+}
+function updateButtonTextInput(event: string) {
+    newField.value.text = event;
+    delete newField.value.buttonTextError;
+}
+function updateCurrentValue(event: string) {
+    newField.value.currentValue = event;
+    delete newField.value.currentValueError;
+}
+function updateApiEndpointInput(event: string) {
+    newField.value.apiEndpoint = event;
+    delete newField.value.apiEndpointError;
+}
+
+function updateOptionsInput(event: string) {
+    newField.value.options = event.split(",").map(i => i.trim()).filter(Boolean);
+    delete newField.value.apiEndpointError;
+}
+
+const dataSourceType = ref(DataSourceType.STATIC);
+function changeDataSourceType(event: DataSourceType) {
+    switch (event) {
+        case DataSourceType.STATIC: {
+            dataSourceType.value = DataSourceType.STATIC;
+            newField.value.currentValue = "";
+            delete newField.value.apiEndpoint;
+            if (newField.value.tag === FieldTag.UI_SELECT) {
+                newField.value.options = [];
+            }
+            break
+        }
+        case DataSourceType.API: {
+            dataSourceType.value = DataSourceType.API;
+            newField.value.apiEndpoint = "";
+            delete newField.value.currentValue;
+            delete newField.value.options;
+        }
+    }
+}
+
+
+function onSubmit() {
+    const {isValid, validatedField} = validateFormBuilder({
+        newFieldData: newField.value,
+        sourceType: dataSourceType.value,
+    });
+    if (!isValid) {
+        newField.value = validatedField;
+        return
+    }
+    emit("saveField", validatedField);
+}
+</script>
+
+<style scoped lang="scss">
+.field-builder {
+    display: grid;
+}
+.start-position {
+    justify-self: start;
+}
+</style>
