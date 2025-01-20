@@ -58,16 +58,8 @@
                     v-model="newField.currentValue"
                     class="start-position"
                 />
-                <UiInput
-                    v-if="newField.tag === FieldTag.UI_SELECT"
-                    name="options"
-                    label="Опции в списке, через запятую"
-                    required
-                    :error-message="newField.optionsError"
-                    :model-value="newField.options?.join(', ')"
-                    @update:model-value="updateOptionsInput"
-                />
             </template>
+
         </template>
         <template v-if="newField.tag === FieldTag.UI_BUTTON">
             <UiInput
@@ -86,9 +78,19 @@
                 v-model="newField.type"
             />
         </template>
+            <template v-if="newField.tag === FieldTag.UI_SELECT">
+                <UiInput
+                    name="options"
+                    label="Опции в списке, через запятую"
+                    required
+                    :error-message="newField.optionsError"
+                    :model-value="newField.options?.join(', ')"
+                    @update:model-value="updateOptionsInput"
+                />
+            </template>
         <div class="row">
             <div class="col text-center">
-                <UiButton :type="ButtonType.SUBMIT" text="Добавить"/>
+            <UiButton :type="ButtonType.SUBMIT" text="Добавить"/>
             </div>
             <div class="col text-center">
                 <UiButton :type="ButtonType.RESET" text="Отмена"/>
@@ -109,8 +111,8 @@ import {buttonTypeOptions, dataSourceSelect, typeFieldSelect} from "@/constants/
 import {getDefaultField, validateFormBuilder} from "@/helpers/helpers";
 
 const props = defineProps<{
-    component: FormField | null,
-}>();
+        component: FormField | null,
+    }>();
 
 watch(() => props.component, (newValue) => {
     newField.value = newValue || getDefaultField(FieldTag.UI_INPUT);
@@ -118,7 +120,6 @@ watch(() => props.component, (newValue) => {
 
 const emit = defineEmits(["saveField", "cancel"])
 const newField: Ref<ValidatedFormField> = ref(props.component || getDefaultField(FieldTag.UI_INPUT));
-
 function changeFieldType(event: FieldTag) {
     const newDefault = getDefaultField(event);
     if (newField.value.name) {
@@ -126,22 +127,18 @@ function changeFieldType(event: FieldTag) {
     }
     newField.value = newDefault;
 }
-
 function updateLabelInput(event: string) {
     newField.value.label = event;
     delete newField.value.labelError;
 }
-
 function updateButtonTextInput(event: string) {
     newField.value.text = event;
     delete newField.value.buttonTextError;
 }
-
 function updateCurrentValue(event: string) {
     newField.value.currentValue = event;
     delete newField.value.currentValueError;
 }
-
 function updateApiEndpointInput(event: string) {
     newField.value.apiEndpoint = event;
     delete newField.value.apiEndpointError;
@@ -153,7 +150,6 @@ function updateOptionsInput(event: string) {
 }
 
 const dataSourceType = ref(DataSourceType.STATIC);
-
 function changeDataSourceType(event: DataSourceType) {
     switch (event) {
         case DataSourceType.STATIC: {
@@ -199,7 +195,6 @@ function onReset() {
 .field-builder {
     display: grid;
 }
-
 .start-position {
     justify-self: start;
 }

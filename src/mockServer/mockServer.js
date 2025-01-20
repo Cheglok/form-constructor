@@ -1,5 +1,4 @@
 import {createServer, JSONAPISerializer} from "miragejs";
-import {makeUniqueName} from "@/helpers/helpers.ts";
 
 export function startMockServer() {
     createServer({
@@ -25,7 +24,7 @@ export function startMockServer() {
                         "Server Option 1",
                         "Server Option 2",
                         "Server Option 3"
-                        ],
+                    ],
                     value: "Server Option 2",
                 }
             });
@@ -41,52 +40,62 @@ export function startMockServer() {
                 return {
                     forms: [
                         {
-                            id: 1,
-                            name: "Sample Form",
+                            method: "/api/save-form",
+                            name: "Новый разработчик",
                             fields: [
                                 {
-                                    tag: "UiInput",
-                                    props: {
-                                        label: "Enter your name",
-                                        required: true,
-                                        name: makeUniqueName(),
-                                        apiEndpoint: "/api/input-data",
-                                        model: "test",
-                                    },
+                                    "name": "0.5110964991950355",
+                                    "tag": "UiInput",
+                                    "required": true,
+                                    "currentValue": "Михаил Чеглок",
+                                    "label": "Имя"
+                                }, {
+                                    "name": "0.5110964991950355",
+                                    "tag": "UiCheckbox",
+                                    "required": true,
+                                    "currentValue": true,
+                                    "label": "Хочет в команду"
+                                }, {
+                                    "name": "0.5110964991950355",
+                                    "tag": "UiSelect",
+                                    "required": true,
+                                    "label": "Возьмёте в команду?",
+                                    "options": ["Да", "Конечно", "Определённо"],
+                                }, {
+                                    "name": "0.5110964991950355",
+                                    "tag": "UiButton",
+                                    "text": "Применить",
+                                    "type": "submit"
+                                }
+                            ],
+                        },
+                        {
+                            method: "/api/save-form",
+                            name: "Создать заметку",
+                            fields: [
+                                {
+                                    "name": "0.5110964991950355",
+                                    "tag": "UiInput",
+                                    "required": true,
+                                    "currentValue": "",
+                                    "label": "Текст заметки"
+                                }, {
+                                    "name": "0.5110964991950355",
+                                    "tag": "UiButton",
+                                    "text": "Отправить заметку",
+                                    "type": "submit"
                                 },
                                 {
-                                    tag: "UiButton",
-                                    props: {
-                                        type: "button",
-                                        text: "Submit",
-                                    },
-                                },
-                                {
-                                    tag: "UiCheckbox",
-                                    props: {
-                                        label: "checkbox label",
-                                        required: true,
-                                        apiEndpoint: "/api/checkbox-data",
-                                        name: makeUniqueName(),
-                                        model: true,
-                                    },
-                                },
-                                {
-                                    tag: "UiSelect",
-                                    props: {
-                                        label: "text",
-                                        options: ["Option 1", "Option 2", "Option 3", "Option selected"],
-                                        required: true,
-                                        placeholder: "Enter your name",
-                                        apiEndpoint: "/api/select-data",
-                                        model: "Option selected"
-                                    },
+                                    "name": "0.5110964991950355",
+                                    "tag": "UiButton",
+                                    "text": "Очистить",
+                                    "type": "reset"
                                 }
                             ],
                         },
                     ]
                 };
-            });
+            }, {timing: 3000});
         },
     })
 }

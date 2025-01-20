@@ -4,6 +4,7 @@
         <input
             :required="required"
             :name="name"
+            :placeholder="placeholder"
             :value="model"
             @input="handleInput"
             type="text"
@@ -23,6 +24,7 @@ const props = defineProps<{
     name: string,
     required?: boolean,
     errorMessage?: string,
+    placeholder?: string,
 }>();
 
 const emit = defineEmits(["update:model-value"])

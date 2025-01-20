@@ -43,7 +43,7 @@
             <h2 class="fs-2">Сохранённые формы</h2>
             <div v-if="!loading" class="row">
                 <div class="col" v-for="form in savedForms">
-                    <UiButton :text="form.name" :type="ButtonType.BUTTON" @click="editForm(form)"/>
+                    <UiButton :text="form.name" type="button" @click="editForm(form)"/>
                 </div>
                 <div class="col">
                     <UiButton text="+" :type="ButtonType.BUTTON" @click="clearForm"/>

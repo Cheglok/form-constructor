@@ -1,23 +1,24 @@
 <template>
     <button
         :type="props.type"
-        class="btn btn-primary mb-3"
+        class="btn btn-primary"
         :class="buttonClasses"
     >{{ props.text }}</button>
 </template>
 
 <script setup lang="ts">
 import {computed} from "vue";
+import {ButtonType} from "@/typespaces/types";
 
 const props = defineProps<{
     text: string,
-    type: "submit" | "reset" | "button"
+    type: ButtonType
 }>();
 
 const buttonClasses = computed(() => {
     return {
-        "btn-success": props.type === "submit",
-        "btn-danger": props.type === "reset"
+        "btn-success": props.type === ButtonType.SUBMIT,
+        "btn-danger": props.type === ButtonType.RESET,
     }
 })
 </script>

@@ -1,19 +1,22 @@
 export type FormField = {
     name: string,
     tag: FieldTag,
-    label?: string,           // Заголовок
-    required?: boolean,       // Обязательность
-    options?: SelectOption[],      // Для dropdown
-    optionsError?: string,
-    apiEndpoint?: string,    // URL для загрузки данных
+    label?: string,
+    required?: boolean,
+    options?: SelectOption[],
+    apiEndpoint?: string,
     currentValue?: string | boolean,
     text?: string,
-    type?: "reset" | "submit",
+    type?: ButtonType,
     errorMessage?: string,
+}
+
+export type ValidatedFormField = FormField & {
     labelError?: string,
     buttonTextError?: string,
     currentValueError?: string,
     apiEndpointError?: string,
+    optionsError?: string,
 }
 
 export type Form = {
@@ -27,6 +30,12 @@ export enum FieldTag {
     UI_CHECKBOX = "UiCheckbox",
     UI_SELECT = "UiSelect",
     UI_BUTTON = "UiButton",
+}
+
+export enum ButtonType {
+    SUBMIT = "submit",
+    RESET = "reset",
+    BUTTON = "button",
 }
 
 export type SelectOption = string | {value: string, title: string}

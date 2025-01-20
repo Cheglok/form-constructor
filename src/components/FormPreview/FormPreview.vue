@@ -1,25 +1,28 @@
 <template>
-    <h2 class="fs-2">Так форму увидит пользователь</h2>
-    <form class="form-preview" @submit.prevent="onSubmit">
-        <div v-for="component in fields" class="field-line">
+    <h2 class="fs-3">Превью формы</h2>
+    <h3 class="fs-4">"{{ form.name }}"</h3>
+    <form class="form-preview" novalidate @submit.prevent="onSubmit" @reset.prevent="onReset">
+        <div v-for="component in form.fields" class="field-line">
             <component
                 :is="component.tag"
                 v-bind="component"
                 v-model="component.currentValue"
                 v-model:options="component.options"
             />
-            <UiButton text="✏" type="button" @click="editField(component)"/>
-            <UiButton text="X" type="button" @click="removeField(component)"/>
-            <hr/>
+            <UiButton text="✏" :type="ButtonType.BUTTON" class="edit-button" @click="editField(component)"/>
+            <UiButton text="X" :type="ButtonType.BUTTON" @click="removeField(component)"/>
         </div>
     </form>
 </template>
 
 <script setup lang="ts">
 import UiButton from "@/components/ui/UiButton.vue";
-import {FormField} from "@/typespaces/types";
+import {ButtonType, Form, FormField} from "@/typespaces/types";
+import axios from "axios";
 
-const props = defineProps(['fields'])
+const props = defineProps<{
+    form: Form
+}>();
 
 
 const emit = defineEmits(["edit-field", "delete-field"])
@@ -31,11 +34,28 @@ function removeField(component: FormField) {
 function editField(component: FormField) {
     emit("edit-field", component)
 }
-function onSubmit() {
-    props.fields.forEach((field: FormField) => {
+async function onSubmit() {
+    const isValid = true;
+    props.form.fields.forEach((field: FormField) => {
+        delete field.errorMessage;
         if (field.required && !field.currentValue) {
             field.errorMessage = "Поле обязательно для заполнения"
         }
+    })
+    if (isValid) {
+        const response = await axios.post(props.form.method, props.form);
+        if (response.data.success) {
+            alert(response.data.message)
+        }
+    }
+}
+
+function onReset() {
+    props.form.fields.forEach((field: FormField) => {
+        if (field.currentValue !== undefined) {
+            typeof field.currentValue === "boolean" ? field.currentValue = false : field.currentValue = "";
+        }
+        delete field.errorMessage;
     })
 }
 
@@ -43,14 +63,15 @@ function onSubmit() {
 
 <style scoped lang="scss">
 .form-preview {
-    border: 1px solid #ccc;
     padding: 10px;
 }
 
 .field-line {
     display: grid;
     grid-template-columns: auto 45px 40px;
-    align-items: start;
-    gap: 8px
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid #ccc;
 }
 </style>

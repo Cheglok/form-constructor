@@ -9,10 +9,6 @@ export function validateFormBuilder(
 } {
     const validatedField = JSON.parse(JSON.stringify(newFieldData));
     let isValid = true;
-    delete validatedField.labelError;
-    delete validatedField.buttonTextError;
-    delete validatedField.currentValueError;
-    delete validatedField.apiEndpointError;
 
     if (validatedField.tag === FieldTag.UI_BUTTON || validatedField.tag === FieldTag.UI_SELECT) {
         if (!validatedField.text) {
@@ -42,44 +38,16 @@ export function validateFormBuilder(
                         isValid = false;
                     }
                 }
+                const isInitialValueCorrect = validatedField.options.some((option: string) => option === validatedField.currentValue);
+                if (!isInitialValueCorrect) {
+                    isValid = false;
+                    validatedField.currentValueError = "Выбранное значение не соответствует вариантам"
+                }
             }
 
         }
     }
     return {isValid, validatedField};
-}
-export function validateForm(fields: FormField[]): boolean {
-    let isValid = true;
-    fields.forEach((field: FormField) => {
-        if (field.required && !validateRequiredField(field)) {
-            isValid = false;
-        }
-    })
-    return isValid;
-}
-
-function validateRequiredField(field: FormField): boolean {
-    delete field.errorMessage;
-    switch (field.tag) {
-        case FieldTag.UI_INPUT:
-            if (!field.currentValue) {
-                field.errorMessage = "Поле обязательно для заполнения"
-                return false;
-            }
-            break
-        case FieldTag.UI_SELECT:
-            if (!field.currentValue) {
-                field.errorMessage = "Обязательно выбрать вариант"
-                return false;
-            }
-            break
-        case FieldTag.UI_CHECKBOX:
-            if (!field.currentValue) {
-                field.errorMessage = "Обязательно отметить"
-                return false;
-            }
-    }
-    return true
 }
 
 export function getDefaultField(tag: FieldTag): FormField {

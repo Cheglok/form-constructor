@@ -1,15 +1,15 @@
-import {ButtonType, DataSourceType, FieldTag, Form, FormField} from "@/typespaces/types";
+import {DataSourceType, FieldTag, Form, FormField} from "@/typespaces/types";
 import {makeUniqueName} from "@/helpers/helpers";
 
 export const typeFieldSelect = [
-    {value: FieldTag.UI_BUTTON, title: "Кнопку"},
-    {value: FieldTag.UI_CHECKBOX, title: "Чекбокс"},
-    {value: FieldTag.UI_INPUT, title: "Текстовое поле"},
-    {value: FieldTag.UI_SELECT, title: "Селект"},
+    {value: "UiButton", title: "Кнопку"},
+    {value: "UiCheckbox", title: "Чекбокс"},
+    {value: "UiInput", title: "Текстовое поле"},
+    {value: "UiSelect", title: "Селект"},
 ]
 export const buttonTypeOptions = [
-    {value: ButtonType.SUBMIT, title: "Кнопка подтверждения"},
-    {value: ButtonType.RESET, title: "Кнопка отмены"},
+    {value: "submit", title: "Кнопка подтверждения"},
+    {value: "reset", title: "Кнопка отмены"},
 ]
 export const dataSourceSelect = [
     {value: DataSourceType.STATIC, title: "Введу сам"},
@@ -35,7 +35,7 @@ export const defaultFields: Record<FieldTag, FormField> = {
         name: makeUniqueName(),
         tag: FieldTag.UI_BUTTON,
         text: "",
-        type: ButtonType.SUBMIT,
+        type: "submit",
     },
     [FieldTag.UI_SELECT]: {
         name: makeUniqueName(),
