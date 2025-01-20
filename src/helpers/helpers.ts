@@ -1,4 +1,6 @@
-import {DataSourceType, FieldTag, FormField} from "@/typespaces/types";
+import {DataSourceType, FieldTag, Form, FormField} from "@/typespaces/types";
+import {defaultFields, defaultForm} from "@/constants/constants";
+
 export function validateFormBuilder(
     {newFieldData, sourceType}: { newFieldData: FormField; sourceType: string; }
 ): {
@@ -78,4 +80,15 @@ function validateRequiredField(field: FormField): boolean {
             }
     }
     return true
+}
+
+export function getDefaultField(tag: FieldTag): FormField {
+    return structuredClone(defaultFields[tag])
+}
+export function getDefaultForm(): Form {
+    return structuredClone(defaultForm)
+}
+
+export function makeUniqueName() {
+    return `${Math.random()}`
 }

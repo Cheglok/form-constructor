@@ -1,0 +1,48 @@
+<template>
+    <h2 class="fs-2">{{ editingComponent ? "Редактирование элемента" : "Создание элемента формы" }}</h2>
+    <UiButton v-if="!currentComponent" text="Создать элемент формы" type="button" @click="createNewComponent"/>
+    <FieldBuilder v-if="currentComponent" @save-field="saveField" :component="currentComponent" @cancel="cancel"/>
+</template>
+
+<script setup lang="ts">
+
+import UiButton from "@/components/ui/UiButton.vue";
+import FieldBuilder from "@/components/FieldConstructor/FieldBuilder.vue";
+import {ref, Ref, watch} from "vue";
+import {FieldTag, FormField} from "@/typespaces/types";
+
+import {getDefaultField} from "@/helpers/helpers";
+
+const emit = defineEmits(["save-field", "cancel-editing"])
+
+const props = defineProps<{
+    editingComponent: FormField | null,
+}>();
+
+const currentComponent: Ref<FormField | null> = ref(null);
+
+watch(() => props.editingComponent, (newValue) => {
+    console.log(newValue, "watched")
+    currentComponent.value = newValue;
+});
+
+function saveField(event) {
+    emit("save-field", event);
+    currentComponent.value = null;
+}
+
+function createNewComponent() {
+    const result = getDefaultField(FieldTag.UI_INPUT);
+    currentComponent.value = result;
+}
+function cancel() {
+    currentComponent.value = null;
+    if (props.editingComponent) {
+        emit("cancel-editing")
+    }
+}
+</script>
+
+<style scoped lang="scss">
+
+</style>

@@ -17,8 +17,8 @@ export type FormField = {
 }
 
 export type Form = {
-    id: string,
-    name: string,
+    name: string
+    method: string,
     fields: FormField[],
 }
 

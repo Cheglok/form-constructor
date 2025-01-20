@@ -1,4 +1,5 @@
 import {createServer, JSONAPISerializer} from "miragejs";
+import {makeUniqueName} from "@/helpers/helpers.ts";
 
 export function startMockServer() {
     createServer({
@@ -32,7 +33,7 @@ export function startMockServer() {
             // Сохранение формы
             this.post("/save-form", (schema, request) => {
                 let attrs = JSON.parse(request.requestBody);
-                return {success: true, form: attrs};
+                return {success: true, message: "Форма сохранена", fields: attrs};
             });
 
             // Получение сохранённых форм
@@ -48,7 +49,7 @@ export function startMockServer() {
                                     props: {
                                         label: "Enter your name",
                                         required: true,
-                                        name: Math.random(),
+                                        name: makeUniqueName(),
                                         apiEndpoint: "/api/input-data",
                                         model: "test",
                                     },
@@ -66,7 +67,7 @@ export function startMockServer() {
                                         label: "checkbox label",
                                         required: true,
                                         apiEndpoint: "/api/checkbox-data",
-                                        name: Math.random(),
+                                        name: makeUniqueName(),
                                         model: true,
                                     },
                                 },

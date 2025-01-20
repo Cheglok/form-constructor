@@ -1,8 +1,7 @@
 <template>
-    <form novalidate @submit.prevent="onSubmit" class="field-builder">
-        <h2 class="fs-2">{{ props.component ? "Редактирование поля" : "Создать новое поле" }}</h2>
+    <form novalidate @submit.prevent="onSubmit" @reset.prevent="onReset" class="field-builder">
         <UiSelect
-            label="Выберите тип поля"
+            label="Выберите тип элемента"
             name="tag"
             :required="true"
             :options="typeFieldSelect"
@@ -13,7 +12,7 @@
         <template v-if="newField.tag !== 'UiButton'">
             <UiInput
                 name="label"
-                label="Подпись к полю"
+                label="Подпись к элементу"
                 required
                 :model-value="newField.label"
                 :error-message="newField.labelError"
@@ -88,15 +87,13 @@
                 @update:model-value="updateOptionsInput"
             />
         <div class="row">
-            <div class="col">
-            <UiButton type="submit" text="Сохранить"/>
+            <div class="col text-center">
+            <UiButton type="submit" text="Добавить"/>
             </div>
-            <div class="col">
-            <UiButton type="reset" text="Сбросить"/>
-
+            <div class="col text-center">
+                <UiButton type="reset" text="Отмена"/>
             </div>
         </div>
-        {{newField}}
     </form>
 </template>
 
@@ -108,19 +105,18 @@ import UiSelect from "@/components/ui/UiSelect.vue";
 import {Ref, ref, watch} from "vue";
 import UiButton from "@/components/ui/UiButton.vue";
 import {DataSourceType, FieldTag, FormField} from "@/typespaces/types";
-import {buttonTypeOptions, dataSourceSelect, getDefaultField, typeFieldSelect} from "@/constants/constants";
-import {validateFormBuilder} from "@/helpers/helpers";
+import {buttonTypeOptions, dataSourceSelect, typeFieldSelect} from "@/constants/constants";
+import {getDefaultField, validateFormBuilder} from "@/helpers/helpers";
 
 const props = defineProps<{
         component: FormField | null,
     }>();
 
 watch(() => props.component, (newValue) => {
-    console.log(newValue);
     newField.value = newValue || getDefaultField(FieldTag.UI_INPUT);
 })
 
-const emit = defineEmits(["saveField"])
+const emit = defineEmits(["saveField", "cancel"])
 const newField: Ref<FormField> = ref(props.component || getDefaultField(FieldTag.UI_INPUT));
 function changeFieldType(event: FieldTag) {
     const newDefault = getDefaultField(event);
@@ -148,7 +144,7 @@ function updateApiEndpointInput(event: string) {
 
 function updateOptionsInput(event: string) {
     newField.value.options = event.split(",").map(i => i.trim()).filter(Boolean);
-    delete newField.value.apiEndpointError;
+    delete newField.value.optionsError;
 }
 
 const dataSourceType = ref(DataSourceType.STATIC);
@@ -183,7 +179,14 @@ function onSubmit() {
         return
     }
     emit("saveField", validatedField);
+    newField.value = getDefaultField(FieldTag.UI_INPUT)
 }
+
+function onReset() {
+    newField.value = null;
+    emit("cancel")
+}
+
 </script>
 
 <style scoped lang="scss">

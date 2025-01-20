@@ -1,7 +1,7 @@
 import {createApp, defineAsyncComponent} from 'vue'
 import './style.css'
 import App from './App.vue'
-import { startMockServer } from "./mockServer/mockServer.ts";
+import { startMockServer } from "./mockServer/mockServer.js";
 
 startMockServer();
 

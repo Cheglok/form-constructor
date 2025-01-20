@@ -1,5 +1,5 @@
 <template>
-    <FormConstructor class="red"/>
+    <FormConstructor/>
 </template>
 <script setup lang="ts">
 import {onMounted} from "vue";

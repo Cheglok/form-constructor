@@ -1,4 +1,5 @@
-import {DataSourceType, FieldTag, FormField} from "@/typespaces/types";
+import {DataSourceType, FieldTag, Form, FormField} from "@/typespaces/types";
+import {makeUniqueName} from "@/helpers/helpers";
 
 export const typeFieldSelect = [
     {value: "UiButton", title: "Кнопку"},
@@ -15,32 +16,38 @@ export const dataSourceSelect = [
     {value: DataSourceType.API, title: "Загрузка с сервера"},
 ]
 
-export const getDefaultField = (tag: FieldTag) => defaultFields[tag];
 export const defaultFields: Record<FieldTag, FormField> = {
     [FieldTag.UI_INPUT]: {
-        name: `${Math.random()}`,
+        name: makeUniqueName(),
         tag: FieldTag.UI_INPUT,
         required: true,
+        currentValue: "",
         label: "",
     },
     [FieldTag.UI_CHECKBOX]: {
-        name: `${Math.random()}`,
+        name: makeUniqueName(),
         tag: FieldTag.UI_CHECKBOX,
         required: true,
         currentValue: true,
         label: "",
     },
     [FieldTag.UI_BUTTON]: {
-        name: `${Math.random()}`,
+        name: makeUniqueName(),
         tag: FieldTag.UI_BUTTON,
         text: "",
         type: "submit",
     },
     [FieldTag.UI_SELECT]: {
-        name: `${Math.random()}`,
+        name: makeUniqueName(),
         tag: FieldTag.UI_SELECT,
         required: true,
         label: "",
         options: [],
     },
+}
+
+export const defaultForm: Form = {
+    name: "",
+    method: "",
+    fields: [],
 }
