@@ -40,7 +40,7 @@ export function startMockServer() {
                 return {
                     forms: [
                         {
-                            method: "/api/save-form",
+                            method: "/save-form",
                             name: "Новый разработчик",
                             fields: [
                                 {
@@ -70,7 +70,7 @@ export function startMockServer() {
                             ],
                         },
                         {
-                            method: "/api/save-form",
+                            method: "/save-form",
                             name: "Создать заметку",
                             fields: [
                                 {

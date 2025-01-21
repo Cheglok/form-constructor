@@ -16,7 +16,7 @@
                         name="method"
                         label="Укажите адрес отправки формы"
                         required
-                        placeholder="работает /api/save-form"
+                        placeholder="работает /save-form"
                         v-model="form.method"
                     />
                 </div>
@@ -63,6 +63,11 @@ import UiInput from "@/components/ui/UiInput.vue";
 import FieldConstructor from "@/components/FieldConstructor/FieldConstructor.vue";
 import axios from "axios";
 import {getDefaultForm} from "@/helpers/helpers";
+import {useMessagesStore} from "@/stores/message";
+import {useFormsStore} from "@/stores/forms";
+
+const messageStore = useMessagesStore();
+const formStore = useFormsStore();
 
 const form: Ref<Form> = ref(getDefaultForm());
 const savedForms: Ref<Form[]> = ref([]);
@@ -70,18 +75,12 @@ const loading: Ref<boolean> = ref(false);
 
 const editingComponent: Ref<FormField | null> = ref(null);
 
-async function saveConstructedForm() {
+function saveConstructedForm() {
     const isValid = validateForm();
     if (!isValid) {
         return;
     }
-    const response = await axios.post("/api/save-form", {
-        method: form.value.method,
-        fields: form.value.fields
-    });
-    if (response.data.success) {
-        alert(response.data.message)
-    }
+    formStore.postSaveForm(form.value);
 }
 
 function saveField(event: FormField) {
@@ -117,17 +116,17 @@ function cancelEditing() {
 
 function validateForm() {
     if (!form.value.name) {
-        alert("Укажите название формы");
+        messageStore.setMessage("Укажите название формы");
         return false;
     }
 
     if (!form.value.method) {
-        alert("Укажите адрес отправки формы");
+        messageStore.setMessage("Укажите адрес отправки формы");
         return false;
     }
 
     if (!form.value.fields.length) {
-        alert("Добавьте в форму элементы");
+        messageStore.setMessage("Добавьте в форму элементы");
         return false;
     }
 
@@ -136,7 +135,7 @@ function validateForm() {
     });
 
     if (!hasConfirmButton) {
-        alert("Ваша форма не содержит кнопку отправки данных");
+        messageStore.setMessage("Ваша форма не содержит кнопку отправки данных");
         return false;
     }
     return true;
@@ -153,10 +152,10 @@ function clearForm() {
 onMounted(async () => {
     try {
         loading.value = true;
-        const response = await axios.get('/api/saved-forms');
+        const response = await axios.get('/saved-forms');
         savedForms.value = response.data.forms;
     } catch (e) {
-        alert(e);
+        messageStore.setMessage(e);
     } finally {
         loading.value = false;
     }

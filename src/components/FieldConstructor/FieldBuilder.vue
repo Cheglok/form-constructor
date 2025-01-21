@@ -35,7 +35,7 @@
                 v-if="dataSourceType === DataSourceType.API"
                 name="apiEndpoint"
                 label="Ссылка для загрузки данных"
-                placeholder="api/input-data, /api/select-data или /api/checkbox-data"
+                placeholder="/input-data, /select-data или /checkbox-data"
                 required
                 :error-message="newField.apiEndpointError"
                 :model-value="newField.apiEndpoint"

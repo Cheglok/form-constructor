@@ -22,7 +22,6 @@ const props = defineProps<{
 const currentComponent: Ref<FormField | null> = ref(null);
 
 watch(() => props.editingComponent, (newValue) => {
-    console.log(newValue, "watched")
     currentComponent.value = newValue;
 });
 

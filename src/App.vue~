@@ -1,5 +1,5 @@
 <template>
-    <FormConstructor/>
+<!--    <FormConstructor/>-->
     <UiModal/>
 </template>
 <script setup lang="ts">

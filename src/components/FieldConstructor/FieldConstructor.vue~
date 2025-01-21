@@ -1,6 +1,6 @@
 <template>
     <h2 class="fs-3">{{ editingComponent ? "Редактирование элемента" : "Создание элемента формы" }}</h2>
-    <UiButton v-if="!currentComponent" text="Создать элемент формы" type="button" @click="createNewComponent"/>
+    <UiButton v-if="!currentComponent" text="Создать элемент формы" :type="ButtonType.BUTTON" @click="createNewComponent"/>
     <FieldBuilder v-if="currentComponent" @save-field="saveField" :component="currentComponent" @cancel="cancel"/>
 </template>
 
@@ -9,7 +9,7 @@
 import UiButton from "@/components/ui/UiButton.vue";
 import FieldBuilder from "@/components/FieldConstructor/FieldBuilder.vue";
 import {ref, Ref, watch} from "vue";
-import {FieldTag, FormField} from "@/typespaces/types";
+import {ButtonType, FieldTag, FormField} from "@/typespaces/types";
 
 import {getDefaultField} from "@/helpers/helpers";
 
