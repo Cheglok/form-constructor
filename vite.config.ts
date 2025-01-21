@@ -1,6 +1,6 @@
-import {fileURLToPath, URL} from "node:url";
+import { fileURLToPath, URL } from "node:url";
 
-import {defineConfig} from "vite";
+import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
@@ -13,9 +13,8 @@ export default defineConfig({
     css: {
         preprocessorOptions: {
             scss: {
-                api: 'modern-compiler' // or "modern"
-            }
-        }
-    }
-
+                api: "modern-compiler", // or "modern"
+            },
+        },
+    },
 });

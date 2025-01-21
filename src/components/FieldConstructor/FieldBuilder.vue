@@ -55,7 +55,8 @@
                     name="startCheckboxValue"
                     label="Чекбокс выбран?"
                     :error-message="newField.currentValueError"
-                    v-model="newField.currentValue"
+                    @update:model-value="updateCurrentValue"
+                    :model-value="!!newField.currentValue"
                     class="start-position"
                 />
                 <UiInput
@@ -88,39 +89,42 @@
         </template>
         <div class="row">
             <div class="col text-center">
-                <UiButton :type="ButtonType.SUBMIT" text="Добавить"/>
+                <UiButton :type="ButtonType.SUBMIT" :text="editing ? 'Сохранить' : 'Добавить'" />
             </div>
             <div class="col text-center">
-                <UiButton :type="ButtonType.RESET" text="Отмена"/>
+                <UiButton :type="ButtonType.RESET" text="Отмена" />
             </div>
         </div>
     </form>
 </template>
 
 <script setup lang="ts">
-
 import UiCheckbox from "@/components/ui/UiCheckbox.vue";
 import UiInput from "@/components/ui/UiInput.vue";
 import UiSelect from "@/components/ui/UiSelect.vue";
-import {Ref, ref, watch} from "vue";
+import { Ref, ref, watch } from "vue";
 import UiButton from "@/components/ui/UiButton.vue";
-import {ButtonType, DataSourceType, FieldTag, FormField, ValidatedFormField} from "@/typespaces/types";
-import {buttonTypeOptions, dataSourceSelect, typeFieldSelect} from "@/constants/constants";
-import {getDefaultField, validateFormBuilder} from "@/helpers/helpers";
+import { ButtonType, DataSourceType, FieldTag, FormField, ValidatedFormField } from "@/typespaces/types";
+import { buttonTypeOptions, dataSourceSelect, typeFieldSelect } from "@/constants/constants";
+import { getDefaultField, validateFormBuilder } from "@/helpers/helpers";
 
 const props = defineProps<{
-    component: FormField | null,
+    component: FormField | null;
+    editing: boolean;
 }>();
 
-watch(() => props.component, (newValue) => {
-    newField.value = newValue || getDefaultField(FieldTag.UI_INPUT);
-})
+watch(
+    () => props.component,
+    (newValue) => {
+        newField.value = newValue || getDefaultField(FieldTag.UI_INPUT);
+    }
+);
 
-const emit = defineEmits(["saveField", "cancel"])
+const emit = defineEmits(["saveField", "cancel"]);
 const newField: Ref<ValidatedFormField> = ref(props.component || getDefaultField(FieldTag.UI_INPUT));
 
-function changeFieldType(event: FieldTag) {
-    const newDefault = getDefaultField(event);
+function changeFieldType(event: string) {
+    const newDefault = getDefaultField(event as FieldTag);
     if (newField.value.name) {
         newDefault.name = newField.value.name;
     }
@@ -137,7 +141,7 @@ function updateButtonTextInput(event: string) {
     delete newField.value.buttonTextError;
 }
 
-function updateCurrentValue(event: string) {
+function updateCurrentValue(event: string | boolean) {
     newField.value.currentValue = event;
     delete newField.value.currentValueError;
 }
@@ -148,14 +152,17 @@ function updateApiEndpointInput(event: string) {
 }
 
 function updateOptionsInput(event: string) {
-    newField.value.options = event.split(",").map(i => i.trim()).filter(Boolean);
+    newField.value.options = event
+        .split(",")
+        .map((i) => i.trim())
+        .filter(Boolean);
     delete newField.value.optionsError;
 }
 
 const dataSourceType = ref(DataSourceType.STATIC);
 
-function changeDataSourceType(event: DataSourceType) {
-    switch (event) {
+function changeDataSourceType(event: string) {
+    switch (event as DataSourceType) {
         case DataSourceType.STATIC: {
             dataSourceType.value = DataSourceType.STATIC;
             newField.value.currentValue = "";
@@ -163,7 +170,7 @@ function changeDataSourceType(event: DataSourceType) {
             if (newField.value.tag === FieldTag.UI_SELECT) {
                 newField.value.options = [];
             }
-            break
+            break;
         }
         case DataSourceType.API: {
             dataSourceType.value = DataSourceType.API;
@@ -174,25 +181,23 @@ function changeDataSourceType(event: DataSourceType) {
     }
 }
 
-
 function onSubmit() {
-    const {isValid, validatedField} = validateFormBuilder({
+    const { isValid, validatedField } = validateFormBuilder({
         newFieldData: newField.value,
         sourceType: dataSourceType.value,
     });
     if (!isValid) {
         newField.value = validatedField;
-        return
+        return;
     }
     emit("saveField", validatedField);
-    newField.value = getDefaultField(FieldTag.UI_INPUT)
+    newField.value = getDefaultField(FieldTag.UI_INPUT);
 }
 
 function onReset() {
     newField.value = getDefaultField(FieldTag.UI_INPUT);
-    emit("cancel")
+    emit("cancel");
 }
-
 </script>
 
 <style scoped lang="scss">

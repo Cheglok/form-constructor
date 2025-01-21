@@ -1,6 +1,6 @@
 <template>
-    <FormConstructor/>
-    <UiModal/>
+    <FormConstructor />
+    <UiModal />
 </template>
 <script setup lang="ts">
 import FormConstructor from "./components/FormConstructor/FormConstructor.vue";

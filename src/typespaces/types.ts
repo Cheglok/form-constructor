@@ -1,29 +1,29 @@
 export type FormField = {
-    name: string,
-    tag: FieldTag,
-    label?: string,
-    required?: boolean,
-    options?: SelectOption[],
-    apiEndpoint?: string,
-    currentValue?: string | boolean,
-    text?: string,
-    type?: ButtonType,
-    errorMessage?: string,
-}
+    name: string;
+    tag: FieldTag;
+    label?: string;
+    required?: boolean;
+    options?: SelectOption[];
+    apiEndpoint?: string;
+    currentValue?: string | boolean;
+    text?: string;
+    type?: ButtonType;
+    errorMessage?: string;
+};
 
 export type ValidatedFormField = FormField & {
-    labelError?: string,
-    buttonTextError?: string,
-    currentValueError?: string,
-    apiEndpointError?: string,
-    optionsError?: string,
-}
+    labelError?: string;
+    buttonTextError?: string;
+    currentValueError?: string;
+    apiEndpointError?: string;
+    optionsError?: string;
+};
 
 export type Form = {
-    name: string
-    method: string,
-    fields: FormField[],
-}
+    name: string;
+    method: string;
+    fields: FormField[];
+};
 
 export enum FieldTag {
     UI_INPUT = "UiInput",
@@ -38,7 +38,7 @@ export enum ButtonType {
     BUTTON = "button",
 }
 
-export type SelectOption = string | {value: string, title: string}
+export type SelectOption = string | { value: string; title: string };
 
 export enum DataSourceType {
     STATIC = "static",

@@ -1,6 +1,6 @@
 <template>
     <label class="form-label ui-input fs-5">
-        <span :class="{'required-star': required}">{{ label }}</span>
+        <span :class="{ 'required-star': required }">{{ label }}</span>
         <input
             :required="required"
             :name="name"
@@ -9,27 +9,27 @@
             @input="handleInput"
             type="text"
             class="form-control"
-        >
+        />
         <span v-if="errorMessage" class="error fs-6">{{ errorMessage }}</span>
     </label>
 </template>
 
 <script setup lang="ts">
-import {onMounted} from "vue";
-import axios from "axios";
+import { onMounted } from "vue";
+import { api } from "@/services/api";
 
 const props = defineProps<{
-    label: string,
-    apiEndpoint?: string,
-    name: string,
-    required?: boolean,
-    errorMessage?: string,
-    placeholder?: string,
+    label: string;
+    apiEndpoint?: string;
+    name: string;
+    required?: boolean;
+    errorMessage?: string;
+    placeholder?: string;
 }>();
 
-const emit = defineEmits(["update:model-value"])
+const emit = defineEmits(["update:model-value"]);
 
-const model = defineModel()
+const model = defineModel();
 
 function handleInput(event: Event) {
     emit("update:model-value", (event.target as HTMLInputElement).value);
@@ -37,11 +37,10 @@ function handleInput(event: Event) {
 
 onMounted(async () => {
     if (props.apiEndpoint) {
-        const response = await axios.get(props.apiEndpoint);
+        const response = await api.get(props.apiEndpoint);
         emit("update:model-value", response.data);
     }
 });
-
 </script>
 
 <style scoped lang="scss">

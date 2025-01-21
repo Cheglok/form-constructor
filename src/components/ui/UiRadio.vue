@@ -1,41 +1,33 @@
 <template>
     <label>
-        {{label}}
-        <input
-            :required="required"
-            :name="name"
-            type="checkbox"
-            :checked="model"
-            @change="handleChange"
-        >
+        {{ label }}
+        <input :required="required" :name="name" type="checkbox" :checked="model" @change="handleChange" />
     </label>
 </template>
 
 <script setup lang="ts">
-import {onMounted} from "vue";
-import axios from "axios";
+import { onMounted } from "vue";
+import { api } from "@/services/api";
 
 const props = defineProps<{
-    label: string,
-    apiEndpoint?: string,
-    name: string,
-    required?: boolean,
+    label: string;
+    apiEndpoint?: string;
+    name: string;
+    required?: boolean;
 }>();
-const emit = defineEmits(["update:model-value"])
-const model = defineModel<boolean>()
+const emit = defineEmits(["update:model-value"]);
+const model = defineModel<boolean>();
 
 function handleChange(event: Event) {
     emit("update:model-value", (event.target as HTMLInputElement).checked);
 }
 
-onMounted(async() => {
+onMounted(async () => {
     if (props.apiEndpoint) {
-        const response = await axios.get(props.apiEndpoint);
+        const response = await api.get(props.apiEndpoint);
         emit("update:model-value", response.data.checked);
     }
 });
 </script>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

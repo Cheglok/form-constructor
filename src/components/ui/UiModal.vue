@@ -3,17 +3,17 @@
         <dialog aria-label="Ошибка" ref="dialog" class="ui-modal">
             <div class="ui-modal__content">
                 {{ message }}
-                <UiButton text="OK" :type="ButtonType.BUTTON" @click="closeModal"/>
+                <UiButton text="OK" :type="ButtonType.BUTTON" @click="closeModal" />
             </div>
         </dialog>
     </Teleport>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, Ref, ref, watch} from "vue";
-import {useMessagesStore} from "@/stores/message";
+import { computed, Ref, ref, watch } from "vue";
+import { useMessagesStore } from "@/stores/message";
 import UiButton from "@/components/ui/UiButton.vue";
-import {ButtonType} from "@/typespaces/types";
+import { ButtonType } from "@/typespaces/types";
 
 const messageStore = useMessagesStore();
 

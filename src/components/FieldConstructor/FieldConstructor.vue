@@ -1,29 +1,42 @@
 <template>
     <h2 class="fs-3">{{ editingComponent ? "Редактирование элемента" : "Создание элемента формы" }}</h2>
-    <UiButton v-if="!currentComponent" text="Создать элемент формы" :type="ButtonType.BUTTON" @click="createNewComponent"/>
-    <FieldBuilder v-if="currentComponent" @save-field="saveField" :component="currentComponent" @cancel="cancel"/>
+    <UiButton
+        v-if="!currentComponent"
+        text="Создать элемент формы"
+        :type="ButtonType.BUTTON"
+        @click="createNewComponent"
+    />
+    <FieldBuilder
+        v-if="currentComponent"
+        @save-field="saveField"
+        :component="currentComponent"
+        :editing="!!editingComponent"
+        @cancel="cancel"
+    />
 </template>
 
 <script setup lang="ts">
-
 import UiButton from "@/components/ui/UiButton.vue";
 import FieldBuilder from "@/components/FieldConstructor/FieldBuilder.vue";
-import {ref, Ref, watch} from "vue";
-import {ButtonType, FieldTag, FormField} from "@/typespaces/types";
+import { ref, Ref, watch } from "vue";
+import { ButtonType, FieldTag, FormField } from "@/typespaces/types";
 
-import {getDefaultField} from "@/helpers/helpers";
+import { getDefaultField } from "@/helpers/helpers";
 
-const emit = defineEmits(["save-field", "cancel-editing"])
+const emit = defineEmits(["save-field", "cancel-editing"]);
 
 const props = defineProps<{
-    editingComponent: FormField | null,
+    editingComponent: FormField | null;
 }>();
 
 const currentComponent: Ref<FormField | null> = ref(null);
 
-watch(() => props.editingComponent, (newValue) => {
-    currentComponent.value = newValue;
-});
+watch(
+    () => props.editingComponent,
+    (newValue) => {
+        currentComponent.value = newValue;
+    }
+);
 
 function saveField(event: FormField) {
     emit("save-field", event);
@@ -36,11 +49,9 @@ function createNewComponent() {
 function cancel() {
     currentComponent.value = null;
     if (props.editingComponent) {
-        emit("cancel-editing")
+        emit("cancel-editing");
     }
 }
 </script>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

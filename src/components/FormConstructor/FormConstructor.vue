@@ -4,12 +4,7 @@
             <h1 class="fs-2">Приветствуем вас в конструкторе формы!</h1>
             <div class="row">
                 <div class="col col-7">
-                    <UiInput
-                        name="formName"
-                        label="Укажите название формы"
-                        required
-                        v-model="form.name"
-                    />
+                    <UiInput name="formName" label="Укажите название формы" required v-model="form.name" />
                 </div>
                 <div class="col col-5">
                     <UiInput
@@ -21,16 +16,19 @@
                     />
                 </div>
             </div>
-            <hr>
-                <template v-if="form.method && form.name">
-                    <div class="col col-7">
-                        <FormPreview :form="form" @edit-field="editField" @delete-field="deleteField"/>
-                    </div>
-                    <div class="col col-5">
-                        <FieldConstructor @save-field="saveField" @cancel-editing="cancelEditing"
-                                          :editing-component="editingComponent"/>
-                    </div>
-                </template>
+            <hr />
+            <template v-if="form.method && form.name">
+                <div class="col col-7">
+                    <FormPreview :form="form" @edit-field="editField" @delete-field="deleteField" />
+                </div>
+                <div class="col col-5">
+                    <FieldConstructor
+                        @save-field="saveField"
+                        @cancel-editing="cancelEditing"
+                        :editing-component="editingComponent"
+                    />
+                </div>
+            </template>
             <div class="col text-center save-button">
                 <UiButton
                     text="Сохранить сконструированную форму"
@@ -42,11 +40,11 @@
         <section>
             <h2 class="fs-2">Сохранённые формы</h2>
             <div v-if="!loading" class="row">
-                <div class="col" v-for="form in savedForms">
-                    <UiButton :text="form.name" :type="ButtonType.BUTTON" @click="editForm(form)"/>
+                <div class="col" v-for="(form, index) in formStore.getSavedForms" :key="index">
+                    <UiButton :text="form.name" :type="ButtonType.BUTTON" @click="editForm(form)" />
                 </div>
                 <div class="col">
-                    <UiButton text="+" :type="ButtonType.BUTTON" @click="clearForm"/>
+                    <UiButton text="+" :type="ButtonType.BUTTON" @click="clearForm" />
                 </div>
             </div>
             <p v-else>Загружаем сохранённые формы...</p>
@@ -56,21 +54,19 @@
 
 <script setup lang="ts">
 import FormPreview from "@/components/FormPreview/FormPreview.vue";
-import {onMounted, ref, Ref} from "vue";
+import { onMounted, ref, Ref } from "vue";
 import UiButton from "@/components/ui/UiButton.vue";
-import {ButtonType, FieldTag, Form, FormField} from "@/typespaces/types";
+import { ButtonType, FieldTag, Form, FormField } from "@/typespaces/types";
 import UiInput from "@/components/ui/UiInput.vue";
 import FieldConstructor from "@/components/FieldConstructor/FieldConstructor.vue";
-import axios from "axios";
-import {getDefaultForm} from "@/helpers/helpers";
-import {useMessagesStore} from "@/stores/message";
-import {useFormsStore} from "@/stores/forms";
+import { getDefaultForm } from "@/helpers/helpers";
+import { useMessagesStore } from "@/stores/message";
+import { useFormsStore } from "@/stores/forms";
 
 const messageStore = useMessagesStore();
 const formStore = useFormsStore();
 
 const form: Ref<Form> = ref(getDefaultForm());
-const savedForms: Ref<Form[]> = ref([]);
 const loading: Ref<boolean> = ref(false);
 
 const editingComponent: Ref<FormField | null> = ref(null);
@@ -87,12 +83,12 @@ function saveField(event: FormField) {
     if (!editingComponent.value) {
         form.value.fields.push(event);
     } else {
-        form.value.fields = form.value.fields.map(item => {
+        form.value.fields = form.value.fields.map((item) => {
             if (item.name === event.name) {
                 return event;
             }
             return item;
-        })
+        });
         editingComponent.value = null;
     }
 }
@@ -105,9 +101,9 @@ function deleteField(event: FormField) {
     if (editingComponent.value?.name === event.name) {
         editingComponent.value = null;
     }
-    form.value.fields = form.value.fields.filter(item => {
+    form.value.fields = form.value.fields.filter((item) => {
         return item.name !== event.name;
-    })
+    });
 }
 
 function cancelEditing() {
@@ -130,7 +126,7 @@ function validateForm() {
         return false;
     }
 
-    const hasConfirmButton = form.value.fields.some(field => {
+    const hasConfirmButton = form.value.fields.some((field) => {
         return field.tag === FieldTag.UI_BUTTON && field.type === ButtonType.SUBMIT;
     });
 
@@ -152,16 +148,12 @@ function clearForm() {
 onMounted(async () => {
     try {
         loading.value = true;
-        const response = await axios.get('/saved-forms');
-        savedForms.value = response.data.forms;
-    } catch (e) {
-        messageStore.setMessage(e);
+        await formStore.fetchSavedForms();
     } finally {
         loading.value = false;
     }
-})
+});
 </script>
-
 
 <style scoped lang="scss">
 .container {

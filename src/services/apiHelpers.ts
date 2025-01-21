@@ -1,9 +1,7 @@
-
-import type { AxiosResponse } from "axios";
 import axios from "axios";
-import {useMessagesStore} from "@/stores/message";
+import { useMessagesStore } from "@/stores/message";
 
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const handleApiError = (error: any) => {
     if (axios.isCancel(error)) {
         return;
@@ -17,7 +15,6 @@ export const handleApiError = (error: any) => {
 
     if (axios.isAxiosError(error)) {
         if (error.response) {
-            // The server responded with a status code outside 2xx
             if (error.response.status === 500) {
                 messagesStore.setMessage("Ошибка на сервере, статус 500. Пожалуйста, обратитесь к администратору.");
             } else {
@@ -28,14 +25,3 @@ export const handleApiError = (error: any) => {
     }
     messagesStore.setMessage(error);
 };
-
-export const validateApiResponseSuccess = (response: AxiosResponse) => {
-    if (!response.data.success) {
-        throw (
-            response.data.error ||
-            response.data.errors?.join(", ") ||
-            "Неизвестная ошибка. Сервер не предоставил описания"
-        );
-    }
-};
-
